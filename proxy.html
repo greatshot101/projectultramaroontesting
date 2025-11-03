@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Ultramaroon</title>
+  <link rel="icon" type="image/x-icon" href="/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:wght@800&family=Cabin:wght@500&family=Montserrat:wght@600&family=Noto+Sans:wght@600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <link rel="stylesheet" href="global.css">
+  <script>
+    if (!localStorage.title) document.title = "Project Ultramaroon";
+      if (localStorage.title) document.title = localStorage.title;
+      </script>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+   <div id="loading-screen">
+    <img id="my-image" src="./logo.png" alt="My Image">
+    <div id="loading-bar">
+      <div id="loading-progress"></div>
+    </div>
+    <div id="loading-message"></div>
+  </div>
+  
+  <nav>
+  </nav>
+  <main>
+     <div class="topnav">
+  <a class="normal" href="./index.html">Home</a>
+  <a class="normal" href="./games.html">Games</a>
+  <a class="active" href="./proxy.html">Proxy</a>
+  <input class="search-bar" type="text" placeholder="Search.." oninput="searchGames()">
+</div>
+    <div class="game-container">
+      <button onclick="javascript:proxy(event, 'violet', 'violet')" class="proxy-btn">
+        <img src="https://raw.githubusercontent.com/titaniumnetwork-dev/Ultraviolet-Static/main/public/uv.png" alt="img">
+        <span>UltraViolet</span>
+      </button>
+    </div>
+    <div id="iframe-container">
+      <div class="iframe-wrapper">
+        <div class="top-bar">
+          <span class="top-text">Textity text</span>
+          <button onclick="hideIframe()">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+        <iframe id="iframe-content"></iframe>
+      </div>
+    </div>
+  </main>
+  <script src="ov.js"></script>
+
+   <!-- JS to remove loading screen and ungray image -->
+  <script>
+    window.onload = function() {
+      var loadingScreen = document.getElementById("loading-screen");
+      var myImage = document.getElementById("my-image");
+      var loadingBar = document.getElementById("loading-bar");
+      var loadingProgress = document.getElementById("loading-progress");
+      var loadingMessage = document.getElementById("loading-message");
+      var messages = ["Loading...", "since 2023", "join the discord", "thanks albinus"];
+      
+      // Function to ungray the image
+      function ungrayImage() {
+        myImage.style.filter = "grayscale(0%)";
+      }
+      ungrayImage()
+      
+      // Function to update the loading bar progress
+      function updateLoadingBar(progress) {
+        loadingProgress.style.width = progress + "%";
+      }
+      
+      // Function to show random loading message
+      function showLoadingMessage() {
+        var randomIndex = Math.floor(Math.random() * messages.length);
+        loadingMessage.innerHTML = messages[randomIndex];
+      }
+      
+      // Update the loading bar progress every 500 milliseconds
+      var progress = 0;
+      var intervalId = setInterval(function() {
+        progress += 10;
+        updateLoadingBar(progress);
+        if (progress >= 100) {
+          clearInterval(intervalId);
+          setTimeout(function() {
+            ungrayImage();
+            loadingScreen.style.display = "none";
+          }, 2000);
+        }
+      }, 500);
+      
+      // Show random loading message on page load or refresh
+      showLoadingMessage();
+    };
+  </script>
+</body>
+
+</html>

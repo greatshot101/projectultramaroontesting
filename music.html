@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>GitHub Music Loader</title>
+    <link rel="stylesheet" href="music.css" />
+  </head>
+  <body>
+    <div id="blue-playlist-container">
+      <div id="amplitude-player">
+        <!-- Left side of player -->
+        <div id="amplitude-left">
+          <img data-amplitude-song-info="cover_art_url" class="album-art"/>
+          <div id="player-left-bottom">
+            <div id="control-container">
+              <div id="central-control-container">
+                <div id="central-controls">
+                  <div class="amplitude-prev" id="previous"></div>
+                  <div class="amplitude-play-pause" id="play-pause"></div>
+                  <div class="amplitude-next" id="next"></div>
+                </div>
+              </div>
+            </div>
+            <div id="meta-container">
+              <span data-amplitude-song-info="name" class="song-name"></span>
+              <div class="song-artist-album">
+                <span data-amplitude-song-info="artist"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right side (playlist) -->
+        <div id="amplitude-right">
+          <p>Loading songs from GitHub...</p>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/amplitudejs@5.3.2/dist/amplitude.min.js"></script>
+    <script>
+      const GITHUB_USER = 'greatshot101';   // ← change this
+      const REPO_NAME = 'music';         // ← change this
+      const MUSIC_PATH = 'music';            // ← folder in your repo
+      const BRANCH = 'main';                 // ← or 'master' if your repo uses that
+
+      async function loadFromGitHub() {
+        const apiURL = `https://api.github.com/repos/${GITHUB_USER}/${REPO_NAME}/contents/${MUSIC_PATH}?ref=${BRANCH}`;
+        try {
+          const res = await fetch(apiURL);
+          if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
+          const files = await res.json();
+
+          // Filter only .mp3 files
+          const mp3s = files.filter(f => f.name.toLowerCase().endsWith('.mp3'));
+
+          if (mp3s.length === 0) {
+            document.getElementById('amplitude-right').innerHTML = '<p>No MP3 files found in the GitHub folder.</p>';
+            return;
+          }
+
+          // Convert to AmplitudeJS format
+          const songs = mp3s.map((file, index) => ({
+            name: file.name.replace('.mp3', ''),
+            artist: 'GitHub Artist',
+            album: 'GitHub Music',
+            url: file.download_url,
+            cover_art_url: 'default-cover.png' // optional
+          }));
+
+          // Initialize AmplitudeJS
+          Amplitude.init({ songs });
+
+          // Render playlist
+          const right = document.getElementById('amplitude-right');
+          right.innerHTML = songs.map((song, i) => `
+            <div class="song amplitude-song-container amplitude-play-pause" data-amplitude-song-index="${i}">
+              <div class="song-meta-data">
+                <span class="song-title">${song.name}</span>
+                <span class="song-artist">${song.artist}</span>
+              </div>
+            </div>
+          `).join('');
+
+        } catch (err) {
+          console.error(err);
+          document.getElementById('amplitude-right').innerHTML = `<p>Error loading songs: ${err.message}</p>`;
+        }
+      }
+
+      loadFromGitHub();
+    </script>
+  </body>
+</html>
